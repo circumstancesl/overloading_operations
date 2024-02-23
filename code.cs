@@ -18,7 +18,7 @@ public class NonInvertibleMatrixException : Exception
 class SquareMatrix : ICloneable
 {
     private int Size;
-    private int[,] Matrix;
+    public int[,] Matrix;
 
     public SquareMatrix(int Size)
     {
@@ -267,21 +267,21 @@ class SquareMatrix : ICloneable
         {
             for (int ColumnIndex = 0; ColumnIndex < Size; ++ColumnIndex)
             {
-                InverseMatrix[RowIndex, ColumnIndex] = AugmentedMatrix[RowIndex, ColumnIndex + Size];
+                InverseMatrix[RowIndex, ColumnIndex] = (int)AugmentedMatrix[RowIndex, ColumnIndex + Size];
             }
         }
 
-        return new SquareMatrix(InverseMatrix);
+        return InverseMatrix;
     }
 
     // Метод для обмена строк в матрице
-    private void SwapRows(double[,] matrix, int Row1, int Row2)
+    private void SwapRows(double[,] Matrix, int Row1, int Row2)
     {
         for (int ElementIndex = 0; ElementIndex < Size; ++ElementIndex)
         {
             double Temp = matrix[Row1, ElementIndex];
-            matrix[Row1, ElementIndex] = matrix[Row2, ElementIndex];
-            matrix[Row2, ElementIndex] = Temp;
+            Matrix[Row1, ElementIndex] = Matrix[Row2, ElementIndex];
+            Matrix[Row2, ElementIndex] = Temp;
         }
     }
 
@@ -293,7 +293,7 @@ class SquareMatrix : ICloneable
     }
 
     // Рекурсивный метод для вычисления определителя
-    private int CalculateDeterminant(int[,] Matrix, int Size)
+    private static int CalculateDeterminant(int[,] Matrix, int Size)
     {
         if (Size == 1)
         {
