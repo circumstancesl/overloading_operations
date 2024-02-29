@@ -15,7 +15,7 @@ public class NonInvertibleMatrixException : Exception
     public NonInvertibleMatrixException(string message) : base(message) { }
 }
 
-class SquareMatrix : ICloneable
+class SquareMatrix : ICloneable, IComparable<SquareMatrix>
 {
     private int Size;
     public int[,] Matrix;
@@ -66,7 +66,7 @@ class SquareMatrix : ICloneable
 
     public static SquareMatrix operator +(SquareMatrix Matrix1, SquareMatrix Matrix2) // Перегрузка оператора +
     {
-        SquareMatrix result = new SquareMatrix(Matrix1.Size);
+        SquareMatrix result = (SquareMatrix)Matrix1.Clone();
 
         for (int RowIndex = 0; RowIndex < Matrix1.Size; ++RowIndex)
         {
@@ -80,7 +80,7 @@ class SquareMatrix : ICloneable
     }
     public static SquareMatrix operator *(SquareMatrix Matrix1, SquareMatrix Matrix2) // Перегрузка оператора *
     {
-        SquareMatrix result = new SquareMatrix(Matrix1.Size);
+        SquareMatrix result = (SquareMatrix)Matrix1.Clone();
 
         for (int RowIndex = 0; RowIndex < Matrix1.Size; ++RowIndex)
         {
@@ -197,7 +197,7 @@ class SquareMatrix : ICloneable
     public SquareMatrix Inverse()
     {
         double[,] AugmentedMatrix = new double[Size, 2 * Size];
-        double[,] InverseMatrix = new double[Size, Size];
+        SquareMatrix InverseMatrix = new SquareMatrix(Size);
 
         // Создаем расширенную матрицу
         for (int RowIndex = 0; RowIndex < Size; ++RowIndex)
@@ -267,7 +267,7 @@ class SquareMatrix : ICloneable
         {
             for (int ColumnIndex = 0; ColumnIndex < Size; ++ColumnIndex)
             {
-                InverseMatrix[RowIndex, ColumnIndex] = (int)AugmentedMatrix[RowIndex, ColumnIndex + Size];
+                InverseMatrix.Matrix[RowIndex, ColumnIndex] = (int)AugmentedMatrix[RowIndex, ColumnIndex + Size];
             }
         }
 
@@ -279,7 +279,7 @@ class SquareMatrix : ICloneable
     {
         for (int ElementIndex = 0; ElementIndex < Size; ++ElementIndex)
         {
-            double Temp = matrix[Row1, ElementIndex];
+            double Temp = Matrix[Row1, ElementIndex];
             Matrix[Row1, ElementIndex] = Matrix[Row2, ElementIndex];
             Matrix[Row2, ElementIndex] = Temp;
         }
@@ -337,14 +337,14 @@ class SquareMatrix : ICloneable
     }
 
     // Реализация метода Equals
-    public override bool Equals(object obj)
+    public override bool Equals(object Obj)
     {
-        if (obj == null || GetType() != obj.GetType())
+        if (Obj == null || GetType() != Obj.GetType())
         {
             return false;
         }
 
-        SquareMatrix other = (SquareMatrix)obj;
+        SquareMatrix other = (SquareMatrix)Obj;
 
         for (int RowIndex = 0; RowIndex < Size; ++RowIndex)
         {
@@ -363,12 +363,12 @@ class SquareMatrix : ICloneable
     // Реализация метода GetHashCode
     public override int GetHashCode()
     {
-        int Hash = 17;
+        int Hash = 17; // 17 простое и нечетное, что уменьшает вероятность коллизий в хеш-таблицах.
         for (int RowIndex = 0; RowIndex < Size; ++RowIndex)
         {
             for (int ColumnIndex = 0; ColumnIndex < Size; ++ColumnIndex)
             {
-                Hash = Hash * 31 + Matrix[RowIndex, ColumnIndex];
+                Hash = Hash * 31 + Matrix[RowIndex, ColumnIndex]; // является простым числом, близким к степени двойки (32)
             }
         }
         return Hash;
